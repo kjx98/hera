@@ -26,7 +26,7 @@ set(PROJECT_VERSION 0.2.5)
 cable_configure_compiler()
 if(CABLE_COMPILER_GNULIKE)
     # TODO: fix the warnings instead
-    add_compile_options(-Wno-pedantic)
+    add_compile_options(-O2 -Wno-pedantic)
 endif()
 
 
