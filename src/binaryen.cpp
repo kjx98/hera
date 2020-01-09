@@ -576,11 +576,13 @@ void BinaryenEngine::verifyContract(wasm::Module & module)
     "Contract export (\"memory\") missing."
   );
 
+  /*
   ensureCondition(
     module.exports.size() == 2,
     ContractValidationFailure,
     "Contract exports more than (\"main\") and (\"memory\")."
   );
+  */
 
   // The existence of this is ensured above.
   wasm::Export* main_export = module.getExport(wasm::Name("main"));
