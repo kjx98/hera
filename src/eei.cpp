@@ -147,7 +147,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiUseGas(int64_t gas)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " useGas " << gas << "\n";
+#endif
 
       ensureCondition(gas >= 0, ArgumentOutOfRange, "Negative gas supplied.");
 
@@ -203,7 +205,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiGetCallDataSize()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getCallDataSize\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -212,7 +216,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiCallDataCopy(uint32_t resultOffset, uint32_t dataOffset, uint32_t length)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " callDataCopy " << hex << resultOffset << " " << dataOffset << " " << length << dec << "\n";
+#endif
 
       safeChargeDataCopy(length, GasSchedule::verylow);
 
@@ -420,7 +426,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiRevertOrFinish(bool revert, uint32_t offset, uint32_t size)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " " << (revert ? "revert " : "finish ") << hex << offset << " " << size << dec << "\n";
+#endif
 
       ensureSourceMemoryBounds(offset, size);
       m_result.returnValue = bytes(size, '\0');

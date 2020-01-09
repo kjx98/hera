@@ -73,7 +73,9 @@ private:
   void BinaryenEthereumInterface::importGlobals(map<wasm::Name, wasm::Literal>& globals, wasm::Module& wasm) {
     (void)globals;
     (void)wasm;
+#if HERA_DEBUGGING
     HERA_DEBUG << "importGlobals\n";
+#endif
   }
 
 #if HERA_DEBUGGING

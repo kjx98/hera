@@ -82,7 +82,9 @@ ExecutionResult WabtEngine::execute(
   bool meterInterfaceGas
 ) {
   instantiationStarted();
+#if HERA_DEBUGGING
   HERA_DEBUG << "Executing with wabt...\n";
+#endif
 
   // Set up the wabt Environment, which includes the Wasm store
   // and the list of modules used for importing/exporting between modules

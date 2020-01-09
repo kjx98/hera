@@ -172,7 +172,9 @@ pair<evmc_status_code, bytes> locallyExecuteSystemContract(
 // @returns the validated and metered output or empty output otherwise.
 bytes sentinel(evmc::HostContext& context, bytes_view input)
 {
+#if HERA_DEBUGGING
   HERA_DEBUG << "Metering (input " << input.size() << " bytes)...\n";
+#endif
 
   int64_t startgas = numeric_limits<int64_t>::max(); // do not charge for metering yet (give unlimited gas)
   int64_t gas = startgas;
@@ -186,7 +188,9 @@ bytes sentinel(evmc::HostContext& context, bytes_view input)
     input
   );
 
+#if HERA_DEBUGGING
   HERA_DEBUG << "Metering done (output " << ret.size() << " bytes, used " << (startgas - gas) << " gas) with code=" << status << "\n";
+#endif
 
   ensureCondition(
     status == EVMC_SUCCESS,
@@ -281,7 +285,9 @@ evmc_result hera_execute(
   hera_instance* hera = static_cast<hera_instance*>(instance);
   evmc::HostContext host{*host_interface, context};
 
+#if HERA_DEBUGGING
   HERA_DEBUG << "Executing message in Hera\n";
+#endif
 
   evmc_result ret;
   memset(&ret, 0, sizeof(evmc_result));
@@ -301,7 +307,9 @@ evmc_result hera_execute(
     // replace executable code if replacement is supplied
     auto preload = hera->contract_preload_list.find(msg->destination);
     if (preload != hera->contract_preload_list.end()) {
+#if HERA_DEBUGGING
       HERA_DEBUG << "Overriding contract.\n";
+#endif
       run_code = preload->second;
     }
 
@@ -393,7 +401,9 @@ evmc_result hera_execute(
     ret.gas_left = result.gasLeft;
   } catch (EndExecution const&) {
     ret.status_code = EVMC_INTERNAL_ERROR;
+#if HERA_DEBUGGING
     HERA_DEBUG << "EndExecution exception has leaked through.\n";
+#endif
   } catch (VMTrap const& e) {
     // TODO: use specific error code? EVMC_INVALID_INSTRUCTION or EVMC_TRAP_INSTRUCTION?
     ret.status_code = EVMC_FAILURE;
