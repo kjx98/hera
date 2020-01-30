@@ -17,8 +17,11 @@
 #pragma once
 
 #include "eei.h"
+#include "lruCache.hpp"
 
 namespace hera {
+
+struct envCache_t;
 
 class WabtEngine : public WasmEngine {
 public:
@@ -34,6 +37,8 @@ public:
   ) override;
 
   void verifyContract(bytes_view code) override;
+protected:
+  LRU::Cache<evmc::address,std::shared_ptr<envCache_t> >	codeCache;
 };
 
 }
