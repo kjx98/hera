@@ -75,6 +75,7 @@ struct envCache_t {
 WabtEthereumInterface*	eei_;
 interp::Environment env_;
 interp::DefinedModule* module_;
+bytes	code_;
 };
 
 
@@ -700,11 +701,12 @@ ExecutionResult WabtEngine::execute(
   if (! codeCache.tryGet(msg.destination, envPtr) ) {
 	// load, and cache
 	envPtr = make_shared<envCache_t>(&interf);
+	envPtr->code_ = code;
 #if HERA_DEBUGGING
 	HERA_DEBUG << "instantiation with wabt...\n";
-	module = instantiation(envPtr, code, "wabt (execute): ");
+	module = instantiation(envPtr, envPtr->code_, "wabt (execute): ");
 #else
-	module = instantiation(envPtr, code);
+	module = instantiation(envPtr, envPtr->code_);
 #endif
 	if (module != nullptr) {
 		envPtr->module_ = module;
