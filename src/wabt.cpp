@@ -37,6 +37,9 @@
 using namespace std;
 using namespace wabt;
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic ignored "-Wunused-variable"
+
 namespace hera {
 
 class WabtEthereumInterface : public EthereumInterface {
@@ -78,13 +81,10 @@ interp::DefinedModule* module_;
 bytes	code_;
 };
 
+static  shared_ptr<envCache_t>	envPtr;
 
 static inline interp::DefinedModule*
-#if HERA_DEBUGGING
-instantiation(shared_ptr<envCache_t> envPtr, bytes_view code, const string stateMsg)
-#else
-instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
-#endif
+instantiation(bytes_view code, const string stateMsg)
 {
   // Create EEI host module
   // The lifecycle of this pointer is handled by `env`.
@@ -94,7 +94,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "useGas",
     {{Type::I64}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -108,7 +108,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getAddress",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -122,7 +122,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getExternalBalance",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -136,7 +136,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockHash",
     {{Type::I64, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -150,7 +150,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "call",
     {{Type::I64, Type::I32, Type::I32, Type::I32, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -168,7 +168,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "callDataCopy",
     {{Type::I32, Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -182,13 +182,19 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getCallDataSize",
     {{}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
       interp::TypedValues& results
     ) {
+#if HERA_DEBUGGING
+	HERA_DEBUG << "call getCallDataSize...\n";
+#endif
       results[0].set_i32(envPtr->eei_->eeiGetCallDataSize());
+#if HERA_DEBUGGING
+	HERA_DEBUG << "call getCallDataSize...done\n";
+#endif
       return interp::Result::Ok;
     }
   );
@@ -196,7 +202,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "callCode",
     {{Type::I64, Type::I32, Type::I32, Type::I32, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -214,7 +220,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "callDelegate",
     {{Type::I64, Type::I32, Type::I32, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -232,7 +238,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "callStatic",
     {{Type::I64, Type::I32, Type::I32, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -250,7 +256,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "storageStore",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -264,7 +270,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "storageLoad",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -278,7 +284,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getCaller",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -292,7 +298,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getCallValue",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -306,7 +312,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "codeCopy",
     {{Type::I32, Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -320,7 +326,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getCodeSize",
     {{}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -334,7 +340,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockCoinbase",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -348,7 +354,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "create",
     {{Type::I32, Type::I32, Type::I32, Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -365,7 +371,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockDifficulty",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -379,7 +385,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "externalCodeCopy",
     {{Type::I32, Type::I32, Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -396,7 +402,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getExternalCodeSize",
     {{Type::I32}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -410,7 +416,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getGasLeft",
     {{}, {Type::I64}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -424,7 +430,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockGasLimit",
     {{}, {Type::I64}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -438,7 +444,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getTxGasPrice",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -452,7 +458,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "log",
     {{Type::I32, Type::I32, Type::I32, Type::I32, Type::I32, Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -469,7 +475,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockNumber",
     {{}, {Type::I64}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -483,7 +489,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getTxOrigin",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -497,7 +503,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "finish",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -511,7 +517,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "revert",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -525,7 +531,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getReturnDataSize",
     {{}, {Type::I32}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -539,7 +545,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "returnDataCopy",
     {{Type::I32, Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -553,7 +559,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "selfDestruct",
     {{Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -567,7 +573,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "getBlockTimestamp",
     {{}, {Type::I64}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues&,
@@ -587,7 +593,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "printMem",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -601,7 +607,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "printMemHex",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -615,7 +621,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "printStorage",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -629,7 +635,7 @@ instantiation(shared_ptr<envCache_t> envPtr, bytes_view code)
   hostModule->AppendFuncExport(
     "printStorageHex",
     {{Type::I32, Type::I32}, {}},
-    [&envPtr](
+    [](
       const interp::HostFunc*,
       const interp::FuncSignature*,
       const interp::TypedValues& args,
@@ -695,19 +701,16 @@ ExecutionResult WabtEngine::execute(
 
   // Set up interface to eei host functions
   ExecutionResult result;
-  shared_ptr<envCache_t>	envPtr;
   interp::DefinedModule* module = nullptr;
   WabtEthereumInterface	interf{context, state_code, msg, result, meterInterfaceGas};
-  if (! codeCache.tryGet(msg.destination, envPtr) ) {
+  if (! codeCache.tryGet(msg.destination, envPtr) || envPtr == nullptr) {
 	// load, and cache
 	envPtr = make_shared<envCache_t>(&interf);
 	envPtr->code_ = code;
 #if HERA_DEBUGGING
 	HERA_DEBUG << "instantiation with wabt...\n";
-	module = instantiation(envPtr, envPtr->code_, "wabt (execute): ");
-#else
-	module = instantiation(envPtr, envPtr->code_);
 #endif
+	module = instantiation(envPtr->code_, "wabt (execute): ");
 	if (module != nullptr) {
 		envPtr->module_ = module;
 		// cache it
@@ -743,9 +746,9 @@ ExecutionResult WabtEngine::execute(
   envPtr->eei_->setWasmMemory(envPtr->env_.GetMemory(0));
 
 #if HERA_DEBUGGING
-	HERA_DEBUG << "interf addr: " << std::hex
+  HERA_DEBUG << "interf addr: " << std::hex
 		<< (uint64_t)envPtr->eei_ << std::endl;
-	HERA_DEBUG << "running wabt RunExport...\n";
+  HERA_DEBUG << "running wabt RunExport...\n";
 #endif
   executionStarted();
 
