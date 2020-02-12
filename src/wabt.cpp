@@ -735,7 +735,8 @@ ExecutionResult WabtEngine::execute(
   interp::Export* mainFunction = module->GetExport("main");
   ensureCondition(mainFunction, ContractValidationFailure, "\"main\" not found");
   ensureCondition(mainFunction->kind == ExternalKind::Func, ContractValidationFailure,  "\"main\" is not a function");
-  //if (msg.kind == EVMC_CREATE && msg.input_size == 0) return result;
+  // no constructor for EWASM contract, verify only
+  if (msg.kind == EVMC_CREATE && msg.input_size == 0) return result;
 #if HERA_DEBUGGING
 	HERA_DEBUG << "prepare wabt Executor...\n";
 #endif
