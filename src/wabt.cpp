@@ -693,6 +693,8 @@ ExecutionResult WabtEngine::execute(
   instantiationStarted();
 #if HERA_DEBUGGING
   HERA_DEBUG << "Executing with wabt...\n";
+  if (msg.input_size == 0)
+	HERA_DEBUG << "call kind: " << msg.kind << " with null input\n";
 #endif
 
   // Set up the wabt Environment, which includes the Wasm store
@@ -733,6 +735,7 @@ ExecutionResult WabtEngine::execute(
   interp::Export* mainFunction = module->GetExport("main");
   ensureCondition(mainFunction, ContractValidationFailure, "\"main\" not found");
   ensureCondition(mainFunction->kind == ExternalKind::Func, ContractValidationFailure,  "\"main\" is not a function");
+  //if (msg.kind == EVMC_CREATE && msg.input_size == 0) return result;
 #if HERA_DEBUGGING
 	HERA_DEBUG << "prepare wabt Executor...\n";
 #endif
