@@ -736,7 +736,14 @@ ExecutionResult WabtEngine::execute(
   ensureCondition(mainFunction, ContractValidationFailure, "\"main\" not found");
   ensureCondition(mainFunction->kind == ExternalKind::Func, ContractValidationFailure,  "\"main\" is not a function");
   // no constructor for EWASM contract, verify only
-  if (msg.kind == EVMC_CREATE && msg.input_size == 0) return result;
+  // should move after execution if want remember owner's address
+  if (msg.kind == EVMC_CREATE) {
+	ensureCondition(msg.input_size == 0, ContractValidationFailure, "create must without input"); 
+	result.isRevert = false;
+	result.returnValue = code;
+	return result;
+  }
+
 #if HERA_DEBUGGING
 	HERA_DEBUG << "prepare wabt Executor...\n";
 #endif
