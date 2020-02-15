@@ -33,11 +33,19 @@ namespace
 /* Checks if host supplied 256 bit value exceeds UINT128_MAX */
 bool exceedsUint128(evmc_uint256be const& value) noexcept
 {
+#ifdef	ommit
     for (unsigned i = 0; i < 16; i++)
     {
         if (value.bytes[i])
             return true;
     }
+#else
+	uint32_t *u32p = (uint32_t *)&value;
+	for (unsigned i = 0; i < 4; ++i, ++u32p)
+	{
+		if (*u32p != 0) return true;
+	}
+#endif
     return false;
 }
 }  // namespace
@@ -68,7 +76,7 @@ void WasmEngine::collectBenchmarkingData()
       heraAssert((offset + length) > offset, "Overflow.");
       heraAssert(memorySize() >= (offset + length), "Out of memory bounds.");
 
-      cerr << depthToString() << " DEBUG printMem" << (useHex ? "Hex(" : "(") << hex << "0x" << offset << ":0x" << length << "): " << dec;
+      HERA_DEBUG << depthToString() << " DEBUG printMem" << (useHex ? "Hex(" : "(") << hex << "0x" << offset << ":0x" << length << "): " << dec;
       if (useHex)
       {
         cerr << hex;
@@ -83,7 +91,7 @@ void WasmEngine::collectBenchmarkingData()
           cerr << memoryGet(i) << " ";
         }
       }
-      cerr << endl;
+      HERA_DEBUG << endl;
   }
 
   void EthereumInterface::debugPrintStorage(bool useHex, uint32_t pathOffset)
@@ -96,7 +104,7 @@ void WasmEngine::collectBenchmarkingData()
       for (uint8_t b: path.bytes)
         cerr << static_cast<int>(b);
 
-      HERA_DEBUG << "): " << dec;
+      cerr << "): " << dec;
 
       evmc_bytes32 result = m_host.get_storage(m_msg.destination, path);
 
@@ -467,7 +475,7 @@ void WasmEngine::collectBenchmarkingData()
   void EthereumInterface::eeiRevertOrFinish(bool revert, uint32_t offset, uint32_t size)
   {
 #if HERA_DEBUGGING
-      HERA_DEBUG << depthToString() << " " << (revert ? "revert " : "finish ") << hex << offset << " " << size << dec << "\n";
+      HERA_DEBUG << depthToString() << " " << (revert ? "revert " : "finish ") << hex << offset << " " << dec << size << "\n";
 #endif
 
 	  if (size > 0) {
@@ -737,8 +745,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition((srcOffset + length) >= srcOffset, InvalidMemoryAccess, "Out of bounds (source) memory copy.");
     ensureCondition(memorySize() >= (srcOffset + length), InvalidMemoryAccess, "Out of bounds (source) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory load from offset 0x" << hex << srcOffset << dec << "\n";
+#endif
 
     for (uint32_t i = 0; i < length; ++i) {
       dst[length - (i + 1)] = memoryGet(srcOffset + i);
@@ -751,8 +761,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition((srcOffset + length) >= srcOffset, InvalidMemoryAccess, "Out of bounds (source) memory copy.");
     ensureCondition(memorySize() >= (srcOffset + length), InvalidMemoryAccess, "Out of bounds (source) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory load from offset 0x" << hex << srcOffset << dec << "\n";
+#endif
 
     for (uint32_t i = 0; i < length; ++i) {
       dst[i] = memoryGet(srcOffset + i);
@@ -766,8 +778,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition(memorySize() >= (srcOffset + length), InvalidMemoryAccess, "Out of bounds (source) memory copy.");
     ensureCondition(dst.size() >= length, InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory load from offset 0x" << hex << srcOffset << dec <<"\n";
+#endif
 
     for (uint32_t i = 0; i < length; ++i) {
       dst[i] = memoryGet(srcOffset + i);
@@ -779,8 +793,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition((dstOffset + length) >= dstOffset, InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
     ensureCondition(memorySize() >= (dstOffset + length), InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory store to offset 0x" << hex << dstOffset << dec << "\n";
+#endif
 
     for (uint32_t i = 0; i < length; ++i) {
       memorySet(dstOffset + length - (i + 1), src[i]);
@@ -792,8 +808,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition((dstOffset + length) >= dstOffset, InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
     ensureCondition(memorySize() >= (dstOffset + length), InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory store to offset 0x" << hex << dstOffset << dec << "\n";
+#endif
 
     for (uint32_t i = 0; i < length; ++i) {
       memorySet(dstOffset + i, src[i]);
@@ -807,8 +825,10 @@ void WasmEngine::collectBenchmarkingData()
     ensureCondition((dstOffset + length) >= dstOffset, InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
     ensureCondition(memorySize() >= (dstOffset + length), InvalidMemoryAccess, "Out of bounds (destination) memory copy.");
 
+#if HERA_DEBUGGING
     if (!length)
       HERA_DEBUG << "Zero-length memory store to offset 0x" << hex << dstOffset << dec << "\n";
+#endif
 
     for (uint32_t i = 0; i < length; i++) {
       memorySet(dstOffset + i, src[srcOffset + i]);

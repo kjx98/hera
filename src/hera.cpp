@@ -296,6 +296,7 @@ evmc_result hera_execute(
     heraAssert(rev == EVMC_BYZANTIUM, "Only Byzantium supported.");
     heraAssert(msg->gas >= 0, "EVMC supplied negative startgas");
 
+    // set false to disable InterfaceGas use
     bool meterInterfaceGas = true;
 
     // the bytecode residing in the state - this will be used by interface methods (i.e. codecopy)
