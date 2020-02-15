@@ -158,7 +158,9 @@ void WasmEngine::collectBenchmarkingData()
 
   int64_t EthereumInterface::eeiGetGasLeft()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getGasLeft\n";
+#endif
 
       static_assert(is_same<decltype(m_result.gasLeft), int64_t>::value, "int64_t type expected");
 
@@ -169,7 +171,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetAddress(uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getAddress " << hex << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -178,7 +182,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetExternalBalance(uint32_t addressOffset, uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getExternalBalance " << hex << addressOffset << " " << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::balance);
 
@@ -189,7 +195,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiGetBlockHash(uint64_t number, uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockHash " << hex << number << " " << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::blockhash);
 
@@ -227,7 +235,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetCaller(uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getCaller " << hex << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -236,7 +246,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetCallValue(uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getCallValue " << hex << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -245,7 +257,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiCodeCopy(uint32_t resultOffset, uint32_t codeOffset, uint32_t length)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " codeCopy " << hex << resultOffset << " " << codeOffset << " " << length << dec << "\n";
+#endif
 
       safeChargeDataCopy(length, GasSchedule::verylow);
 
@@ -254,7 +268,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiGetCodeSize()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getCodeSize\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -263,7 +279,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiExternalCodeCopy(uint32_t addressOffset, uint32_t resultOffset, uint32_t codeOffset, uint32_t length)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " externalCodeCopy " << hex << addressOffset << " " << resultOffset << " " << codeOffset << " " << length << dec << "\n";
+#endif
 
       safeChargeDataCopy(length, GasSchedule::extcode);
 
@@ -278,7 +296,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiGetExternalCodeSize(uint32_t addressOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getExternalCodeSize " << hex << addressOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::extcode);
 
@@ -290,7 +310,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetBlockCoinbase(uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockCoinbase " << hex << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -299,7 +321,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetBlockDifficulty(uint32_t offset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockDifficulty " << hex << offset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -308,7 +332,9 @@ void WasmEngine::collectBenchmarkingData()
 
   int64_t EthereumInterface::eeiGetBlockGasLimit()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockGasLimit\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -319,7 +345,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetTxGasPrice(uint32_t valueOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getTxGasPrice " << hex << valueOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -328,7 +356,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiLog(uint32_t dataOffset, uint32_t length, uint32_t numberOfTopics, uint32_t topic1, uint32_t topic2, uint32_t topic3, uint32_t topic4)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " log " << hex << dataOffset << " " << length << " " << numberOfTopics << dec << "\n";
+#endif
 
       static_assert(GasSchedule::log <= 65536, "Gas cost of log could lead to overflow");
       static_assert(GasSchedule::logTopic <= 65536, "Gas cost of logTopic could lead to overflow");
@@ -356,7 +386,9 @@ void WasmEngine::collectBenchmarkingData()
 
   int64_t EthereumInterface::eeiGetBlockNumber()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockNumber\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -367,7 +399,9 @@ void WasmEngine::collectBenchmarkingData()
 
   int64_t EthereumInterface::eeiGetBlockTimestamp()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getBlockTimestamp\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -378,7 +412,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiGetTxOrigin(uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getTxOrigin " << hex << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -387,7 +423,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiStorageStore(uint32_t pathOffset, uint32_t valueOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " storageStore " << hex << pathOffset << " " << valueOffset << dec << "\n";
+#endif
 
       static_assert(
         GasSchedule::storageStoreCreate >= GasSchedule::storageStoreChange,
@@ -414,7 +452,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiStorageLoad(uint32_t pathOffset, uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " storageLoad " << hex << pathOffset << " " << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::storageLoad);
 
@@ -430,10 +470,11 @@ void WasmEngine::collectBenchmarkingData()
       HERA_DEBUG << depthToString() << " " << (revert ? "revert " : "finish ") << hex << offset << " " << size << dec << "\n";
 #endif
 
-      ensureSourceMemoryBounds(offset, size);
-      m_result.returnValue = bytes(size, '\0');
-      loadMemory(offset, m_result.returnValue, size);
-
+	  if (size > 0) {
+		ensureSourceMemoryBounds(offset, size);
+		m_result.returnValue = bytes(size, '\0');
+		loadMemory(offset, m_result.returnValue, size);
+      }
       m_result.isRevert = revert;
 
       throw EndExecution{};
@@ -441,7 +482,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiGetReturnDataSize()
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " getReturnDataSize\n";
+#endif
 
       takeInterfaceGas(GasSchedule::base);
 
@@ -450,7 +493,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiReturnDataCopy(uint32_t dataOffset, uint32_t offset, uint32_t size)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " returnDataCopy " << hex << dataOffset << " " << offset << " " << size << dec << "\n";
+#endif
 
       safeChargeDataCopy(size, GasSchedule::verylow);
 
@@ -577,7 +622,9 @@ void WasmEngine::collectBenchmarkingData()
 
   uint32_t EthereumInterface::eeiCreate(uint32_t valueOffset, uint32_t dataOffset, uint32_t length, uint32_t resultOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " create " << hex << valueOffset << " " << dataOffset << " " << length << dec << " " << resultOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::create);
 
@@ -642,7 +689,9 @@ void WasmEngine::collectBenchmarkingData()
 
   void EthereumInterface::eeiSelfDestruct(uint32_t addressOffset)
   {
+#if HERA_DEBUGGING
       HERA_DEBUG << depthToString() << " selfDestruct " << hex << addressOffset << dec << "\n";
+#endif
 
       takeInterfaceGas(GasSchedule::selfdestruct);
 
