@@ -127,6 +127,7 @@ protected:
   // EEI methods
 
 #if HERA_DEBUGGING
+  void debugPrint(uint32_t offset, uint32_t length);
   void debugPrintMem(bool useHex, uint32_t offset, uint32_t length);
   void debugPrintStorage(bool useHex, uint32_t pathOffset);
   void debugEvmTrace(uint32_t pc, int32_t opcode, uint32_t cost, int32_t sp);
