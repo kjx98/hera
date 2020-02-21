@@ -63,6 +63,22 @@ void WasmEngine::collectBenchmarkingData()
 }
 
 #if HERA_DEBUGGING
+  void EthereumInterface::debugPrint(uint32_t offset, uint32_t length)
+  {
+      heraAssert((offset + length) > offset, "Overflow.");
+      heraAssert(memorySize() >= (offset + length), "Out of memory bounds.");
+
+      HERA_DEBUG << depthToString() << " DEBUG print: ";
+      {
+        cerr << hex;
+        for (uint32_t i = offset; i < (offset + length); i++) {
+          cerr << static_cast<char>(memoryGet(i));
+        }
+        cerr << dec;
+      }
+      HERA_DEBUG << endl;
+  }
+
   void EthereumInterface::debugPrintMem(bool useHex, uint32_t offset, uint32_t length)
   {
       heraAssert((offset + length) > offset, "Overflow.");

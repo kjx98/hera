@@ -593,6 +593,20 @@ ExecutionResult WabtEngine::execute(
   heraAssert(hostModule, "Failed to create host module.");
 
   hostModule->AppendFuncExport(
+    "print",
+    {{Type::I32, Type::I32}, {}},
+    [&interface](
+      const interp::HostFunc*,
+      const interp::FuncSignature*,
+      const interp::TypedValues& args,
+      interp::TypedValues&
+    ) {
+      interface.debugPrint(false, args[0].value.i32, args[1].value.i32);
+      return interp::Result::Ok;
+    }
+  );
+
+  hostModule->AppendFuncExport(
     "printMem",
     {{Type::I32, Type::I32}, {}},
     [&interface](
@@ -1161,6 +1175,19 @@ void WabtEngine::verifyContract(bytes_view code) {
   // The lifecycle of this pointer is handled by `env`.
   hostModule = env.AppendHostModule("debug");
   heraAssert(hostModule, "Failed to create host module.");
+
+  hostModule->AppendFuncExport(
+    "print",
+    {{Type::I32, Type::I32}, {}},
+    [&](
+      const interp::HostFunc*,
+      const interp::FuncSignature*,
+      const interp::TypedValues&,
+      interp::TypedValues&
+    ) {
+      return interp::Result::Ok;
+    }
+  );
 
   hostModule->AppendFuncExport(
     "printMem",
