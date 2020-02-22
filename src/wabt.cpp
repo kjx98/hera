@@ -601,7 +601,7 @@ ExecutionResult WabtEngine::execute(
       const interp::TypedValues& args,
       interp::TypedValues&
     ) {
-      interface.debugPrint(false, args[0].value.i32, args[1].value.i32);
+      interface.debugPrint(args[0].value.i32, args[1].value.i32);
       return interp::Result::Ok;
     }
   );
