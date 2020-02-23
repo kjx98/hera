@@ -362,8 +362,17 @@ evmc_result hera_execute(
     heraAssert(hera->engine, "Wasm engine not set.");
     WasmEngine& engine = *hera->engine;
 
-    ExecutionResult result = engine.execute(host, run_code, state_code, *msg, meterInterfaceGas);
-    heraAssert(result.gasLeft >= 0, "Negative gas left after execution.");
+    ExecutionResult result;
+	// should move after execution if want remember owner's address
+	if (msg->kind == EVMC_CREATE) {
+		ensureCondition(msg->input_size == 0, ContractValidationFailure, "create must without input"); 
+		result.gasLeft = msg->gas;
+		result.isRevert = false;
+		result.returnValue = run_code;
+	} else {
+		result = engine.execute(host, run_code, state_code, *msg, meterInterfaceGas);
+		heraAssert(result.gasLeft >= 0, "Negative gas left after execution.");
+	}
 
     // copy call result
     if (result.returnValue.size() > 0) {

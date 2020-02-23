@@ -698,13 +698,6 @@ ExecutionResult WabtEngine::execute(
   interp::Export* mainFunction = module->GetExport("main");
   ensureCondition(mainFunction, ContractValidationFailure, "\"main\" not found");
   ensureCondition(mainFunction->kind == ExternalKind::Func, ContractValidationFailure,  "\"main\" is not a function");
-  // should move after execution if want remember owner's address
-  if (msg.kind == EVMC_CREATE) {
-	ensureCondition(msg.input_size == 0, ContractValidationFailure, "create must without input"); 
-	result.isRevert = false;
-	result.returnValue = code;
-	return result;
-  }
 
   interp::Executor executor(
     &env,
